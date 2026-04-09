@@ -457,7 +457,7 @@
         lucide.createIcons();
 
         // ========== 請將你的 Google Apps Script 網址貼在這裡 ==========
-        const GAS_URL = "https://script.google.com/macros/s/你的部署ID/exec"; 
+        const GAS_URL = "https://script.google.com/macros/s/AKfycbwoEYHLDK0RPlkmzMvVhxqSmwWXfSqeWtLF-kzOTmYw6TrfkiUtradpMN7jO6nPZHNF3Q/exec"; 
 
         const stages = [
             { id: 0, title: "首頁", icon: "play" },
@@ -655,7 +655,7 @@
             isSubmitting = true;
 
             // 如果沒有填寫 GAS 網址，只給提示
-            if (GAS_URL === "https://script.google.com/macros/s/AKfycby-iidSoKC1pfNkkbDegYxT97KLjbTzRcRZSY6mZjifZYNis_-txCLCT7kqpneM2HJNrg/exec") {
+            if (GAS_URL === "https://script.google.com/macros/s/你的部署ID/exec" || GAS_URL === "") {
                 alert("🎉 模擬送出成功！\n\n您收集到的資料：\n" + JSON.stringify(payload, null, 2) + "\n\n(若要實際寫入 Google 試算表，請在 HTML 程式碼中填入您部署的 GAS_URL)");
                 btn.innerHTML = '完成任務 🎉';
                 isSubmitting = false;
