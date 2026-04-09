@@ -1,0 +1,686 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI數據探究任務包</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        .custom-scrollbar::-webkit-scrollbar { width: 8px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: rgba(30, 41, 59, 1); border-radius: 4px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(99, 102, 241, 0.5); border-radius: 4px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: rgba(99, 102, 241, 0.8); }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .animate-fade-in { animation: fadeIn 0.4s ease-out forwards; }
+        
+        /* 隱藏/顯示階段的 class */
+        .stage-content { display: none; }
+        .stage-content.active { display: block; }
+    </style>
+</head>
+<body class="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 font-sans text-slate-800 flex flex-col items-center py-6 px-4 md:py-12">
+
+    <!-- 頂部進度條 -->
+    <div class="w-full max-w-4xl mb-8">
+        <div class="flex justify-between items-center mb-2 px-2" id="progress-icons">
+            <!-- 動態生成圖標 -->
+        </div>
+        <div class="h-3 bg-white rounded-full shadow-inner overflow-hidden">
+            <div id="progress-bar-fill" class="h-full bg-gradient-to-r from-blue-400 via-indigo-500 to-purple-500 transition-all duration-500 ease-out" style="width: 0%"></div>
+        </div>
+    </div>
+
+    <!-- 主要內容卡片 -->
+    <div class="w-full max-w-4xl bg-white rounded-3xl shadow-xl overflow-hidden relative">
+        
+        <!-- 背景裝飾 -->
+        <div class="absolute top-0 right-0 -mr-16 -mt-16 w-64 h-64 bg-gradient-to-br from-yellow-300 to-orange-400 rounded-full opacity-20 blur-3xl pointer-events-none"></div>
+        <div class="absolute bottom-0 left-0 -ml-16 -mb-16 w-48 h-48 bg-gradient-to-tr from-blue-400 to-purple-400 rounded-full opacity-20 blur-3xl pointer-events-none"></div>
+
+        <div class="p-6 md:p-12 relative z-10 min-h-[60vh]" id="stages-container">
+            
+            <!-- 第 0 階段：封面 -->
+            <div id="stage-0" class="stage-content active h-full flex flex-col justify-center items-center text-center animate-fade-in space-y-8 py-10">
+                <div class="inline-block px-4 py-1.5 rounded-full bg-orange-100 text-orange-600 font-bold text-sm tracking-wider uppercase mb-2">
+                    AI 數據探究任務
+                </div>
+                <h1 class="text-4xl md:text-6xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 to-purple-600 leading-tight">
+                    我讀書多久，<br class="md:hidden" />真的有差嗎？
+                </h1>
+                <p class="text-lg md:text-xl text-slate-500 max-w-2xl">
+                    這不是一堂聽講課，這是一場由你主導的數據偵探遊戲。<br/>
+                    準備好找出成績背後的秘密了嗎？
+                </p>
+                <img src="https://api.dicebear.com/7.x/notionists/svg?seed=Felix&backgroundColor=f8fafc" alt="Student Icon" class="w-48 h-48 rounded-full border-4 border-white shadow-lg bg-indigo-50" />
+                <button onclick="goToStage(1)" class="mt-8 px-8 py-4 bg-gradient-to-r from-indigo-500 to-purple-500 text-white font-bold rounded-2xl shadow-lg hover:shadow-xl hover:-translate-y-1 transition-all text-xl flex items-center">
+                    開始探究任務 <i data-lucide="chevron-right" class="ml-2 w-6 h-6"></i>
+                </button>
+            </div>
+
+            <!-- 第一階段：觀察自己的數據 -->
+            <div id="stage-1" class="stage-content animate-fade-in space-y-6">
+                <div class="flex items-center space-x-3 mb-8">
+                    <div class="p-3 bg-blue-100 text-blue-600 rounded-2xl"><i data-lucide="search" class="w-8 h-8"></i></div>
+                    <div>
+                        <h2 class="text-2xl md:text-3xl font-bold text-slate-800">第一階段：觀察自己的數據</h2>
+                        <p class="text-slate-500">Data Awareness • 先看懂自己的資料，別急著做圖！</p>
+                    </div>
+                </div>
+                <!-- 內容省略，保持與原本相同，將互動元素轉為純HTML -->
+                <div class="space-y-6 bg-slate-50 p-6 md:p-8 rounded-2xl border border-slate-100">
+                    <div class="grid md:grid-cols-2 gap-6">
+                        <div class="space-y-2">
+                            <label class="font-bold text-slate-700 flex items-center">
+                                <span class="bg-white shadow-sm w-6 h-6 flex items-center justify-center rounded-full text-indigo-500 mr-2 text-sm">1</span>
+                                我的每日讀書時間是：
+                            </label>
+                            <div class="flex items-center">
+                                <input type="number" id="s1_hours" class="w-full p-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-indigo-400 outline-none" placeholder="例如：2">
+                                <span class="ml-3 font-bold text-slate-500">小時</span>
+                            </div>
+                        </div>
+                        <div class="space-y-2">
+                            <label class="font-bold text-slate-700 flex items-center">
+                                <span class="bg-white shadow-sm w-6 h-6 flex items-center justify-center rounded-full text-indigo-500 mr-2 text-sm">2</span>
+                                我的平均成績是：
+                            </label>
+                            <div class="flex items-center">
+                                <input type="number" id="s1_score" class="w-full p-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-indigo-400 outline-none" placeholder="例如：85">
+                                <span class="ml-3 font-bold text-slate-500">分</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="space-y-3 pt-4">
+                        <label class="font-bold text-slate-700 flex items-center">
+                            <span class="bg-white shadow-sm w-6 h-6 flex items-center justify-center rounded-full text-indigo-500 mr-2 text-sm">3</span>
+                            我覺得我的數據屬於：
+                        </label>
+                        <div class="grid grid-cols-2 gap-3" id="s1_type_group">
+                            <label class="radio-label flex items-center p-4 rounded-xl cursor-pointer border-2 border-transparent bg-white shadow-sm hover:border-indigo-200 transition-all" onclick="selectRadio(this, 's1_type_group', 'indigo')">
+                                <input type="radio" name="s1_type" value="高讀書 × 高成績" class="hidden">
+                                <div class="radio-circle w-5 h-5 rounded-full border-2 border-slate-300 mr-3 flex items-center justify-center"></div>
+                                <span class="font-medium text-slate-700">高讀書 × 高成績</span>
+                            </label>
+                            <label class="radio-label flex items-center p-4 rounded-xl cursor-pointer border-2 border-transparent bg-white shadow-sm hover:border-indigo-200 transition-all" onclick="selectRadio(this, 's1_type_group', 'indigo')">
+                                <input type="radio" name="s1_type" value="高讀書 × 低成績" class="hidden">
+                                <div class="radio-circle w-5 h-5 rounded-full border-2 border-slate-300 mr-3 flex items-center justify-center"></div>
+                                <span class="font-medium text-slate-700">高讀書 × 低成績</span>
+                            </label>
+                            <label class="radio-label flex items-center p-4 rounded-xl cursor-pointer border-2 border-transparent bg-white shadow-sm hover:border-indigo-200 transition-all" onclick="selectRadio(this, 's1_type_group', 'indigo')">
+                                <input type="radio" name="s1_type" value="低讀書 × 高成績" class="hidden">
+                                <div class="radio-circle w-5 h-5 rounded-full border-2 border-slate-300 mr-3 flex items-center justify-center"></div>
+                                <span class="font-medium text-slate-700">低讀書 × 高成績</span>
+                            </label>
+                            <label class="radio-label flex items-center p-4 rounded-xl cursor-pointer border-2 border-transparent bg-white shadow-sm hover:border-indigo-200 transition-all" onclick="selectRadio(this, 's1_type_group', 'indigo')">
+                                <input type="radio" name="s1_type" value="低讀書 × 低成績" class="hidden">
+                                <div class="radio-circle w-5 h-5 rounded-full border-2 border-slate-300 mr-3 flex items-center justify-center"></div>
+                                <span class="font-medium text-slate-700">低讀書 × 低成績</span>
+                            </label>
+                        </div>
+                    </div>
+                    <div class="space-y-2 pt-4">
+                        <label class="font-bold text-slate-700 flex items-center">
+                            <span class="bg-white shadow-sm w-6 h-6 flex items-center justify-center rounded-full text-indigo-500 mr-2 text-sm">4</span>
+                            我觀察到一個「特別的人」（例如：讀很多但成績不好的人）：
+                        </label>
+                        <input type="text" id="s1_special" class="w-full p-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-indigo-400 outline-none" placeholder="他是...">
+                    </div>
+                    <div class="space-y-2 pt-4">
+                        <label class="font-bold text-slate-700 flex items-center">
+                            <span class="bg-white shadow-sm w-6 h-6 flex items-center justify-center rounded-full text-indigo-500 mr-2 text-sm">5</span>
+                            我初步的想法：「讀越久 = 成績越好嗎？」
+                        </label>
+                        <textarea id="s1_thought" class="w-full p-4 rounded-xl border border-slate-200 focus:ring-2 focus:ring-indigo-400 outline-none h-24 resize-none" placeholder="我的想法是..."></textarea>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 第二階段：找規律 -->
+            <div id="stage-2" class="stage-content animate-fade-in space-y-6">
+                <div class="flex items-center space-x-3 mb-8">
+                    <div class="p-3 bg-emerald-100 text-emerald-600 rounded-2xl"><i data-lucide="book-open" class="w-8 h-8"></i></div>
+                    <div>
+                        <h2 class="text-2xl md:text-3xl font-bold text-slate-800">第二階段：找規律</h2>
+                        <p class="text-slate-500">Pattern Finding • 開始訓練你的資料素養！</p>
+                    </div>
+                </div>
+                <div class="space-y-6 bg-slate-50 p-6 md:p-8 rounded-2xl border border-slate-100">
+                    <div class="space-y-3">
+                        <label class="font-bold text-slate-700 flex items-center">
+                            <span class="bg-white shadow-sm w-6 h-6 flex items-center justify-center rounded-full text-emerald-500 mr-2 text-sm">1</span>
+                            大部分人讀書時間落在：
+                        </label>
+                        <div class="grid grid-cols-2 md:grid-cols-4 gap-3" id="s2_majority_group">
+                            <label class="radio-label-btn flex justify-center items-center p-3 rounded-xl cursor-pointer border-2 border-transparent bg-white shadow-sm hover:border-emerald-200 text-slate-600 transition-all" onclick="selectRadioBtn(this, 's2_majority_group', 'emerald')">
+                                <input type="radio" name="s2_majority" value="0~1小時" class="hidden">0~1小時
+                            </label>
+                            <label class="radio-label-btn flex justify-center items-center p-3 rounded-xl cursor-pointer border-2 border-transparent bg-white shadow-sm hover:border-emerald-200 text-slate-600 transition-all" onclick="selectRadioBtn(this, 's2_majority_group', 'emerald')">
+                                <input type="radio" name="s2_majority" value="1~2小時" class="hidden">1~2小時
+                            </label>
+                            <label class="radio-label-btn flex justify-center items-center p-3 rounded-xl cursor-pointer border-2 border-transparent bg-white shadow-sm hover:border-emerald-200 text-slate-600 transition-all" onclick="selectRadioBtn(this, 's2_majority_group', 'emerald')">
+                                <input type="radio" name="s2_majority" value="2~3小時" class="hidden">2~3小時
+                            </label>
+                            <label class="radio-label-btn flex justify-center items-center p-3 rounded-xl cursor-pointer border-2 border-transparent bg-white shadow-sm hover:border-emerald-200 text-slate-600 transition-all" onclick="selectRadioBtn(this, 's2_majority_group', 'emerald')">
+                                <input type="radio" name="s2_majority" value="3小時以上" class="hidden">3小時以上
+                            </label>
+                        </div>
+                    </div>
+                    <div class="space-y-2 pt-4">
+                        <label class="font-bold text-slate-700 flex items-center">
+                            <span class="bg-white shadow-sm w-6 h-6 flex items-center justify-center rounded-full text-emerald-500 mr-2 text-sm">2</span>
+                            成績最高的人，讀書時間是多少？
+                        </label>
+                        <input type="text" id="s2_highestHours" class="w-full p-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-emerald-400 outline-none" placeholder="請填寫...">
+                    </div>
+                    <div class="grid md:grid-cols-2 gap-6 pt-4">
+                        <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-100">
+                            <label class="font-bold text-slate-700 flex items-center mb-3">
+                                <span class="bg-slate-100 w-6 h-6 flex items-center justify-center rounded-full text-emerald-500 mr-2 text-sm">3</span>
+                                有「讀很多但成績不高」的人嗎？
+                            </label>
+                            <div class="flex space-x-4 mb-3">
+                                <label class="flex items-center cursor-pointer">
+                                    <input type="radio" name="s2_highLow" value="有" class="mr-2 accent-emerald-500" onchange="toggleDesc('hl_desc', true)"> 有
+                                </label>
+                                <label class="flex items-center cursor-pointer">
+                                    <input type="radio" name="s2_highLow" value="沒有" class="mr-2 accent-emerald-500" onchange="toggleDesc('hl_desc', false)"> 沒有
+                                </label>
+                            </div>
+                            <input type="text" id="hl_desc" class="w-full p-2 rounded-lg border border-slate-200 focus:ring-2 focus:ring-emerald-400 outline-none text-sm hidden" placeholder="他的情況是...">
+                        </div>
+                        <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-100">
+                            <label class="font-bold text-slate-700 flex items-center mb-3">
+                                <span class="bg-slate-100 w-6 h-6 flex items-center justify-center rounded-full text-emerald-500 mr-2 text-sm">4</span>
+                                有「讀很少但成績很好」的人嗎？
+                            </label>
+                            <div class="flex space-x-4 mb-3">
+                                <label class="flex items-center cursor-pointer">
+                                    <input type="radio" name="s2_lowHigh" value="有" class="mr-2 accent-emerald-500" onchange="toggleDesc('lh_desc', true)"> 有
+                                </label>
+                                <label class="flex items-center cursor-pointer">
+                                    <input type="radio" name="s2_lowHigh" value="沒有" class="mr-2 accent-emerald-500" onchange="toggleDesc('lh_desc', false)"> 沒有
+                                </label>
+                            </div>
+                            <input type="text" id="lh_desc" class="w-full p-2 rounded-lg border border-slate-200 focus:ring-2 focus:ring-emerald-400 outline-none text-sm hidden" placeholder="他的情況是...">
+                        </div>
+                    </div>
+                    <div class="space-y-2 pt-4">
+                        <label class="font-bold text-slate-700 flex items-center">
+                            <span class="bg-white shadow-sm w-6 h-6 flex items-center justify-center rounded-full text-emerald-500 mr-2 text-sm">5</span>
+                            我覺得影響成績的其他因素可能是：（至少寫2個）
+                        </label>
+                        <textarea id="s2_factors" class="w-full p-4 rounded-xl border border-slate-200 focus:ring-2 focus:ring-emerald-400 outline-none h-24 resize-none" placeholder="1. 專注力&#10;2. 補習..."></textarea>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 第三階段：轉換成圖表 -->
+            <div id="stage-3" class="stage-content animate-fade-in space-y-6">
+                <div class="flex items-center space-x-3 mb-8">
+                    <div class="p-3 bg-amber-100 text-amber-600 rounded-2xl"><i data-lucide="line-chart" class="w-8 h-8"></i></div>
+                    <div>
+                        <h2 class="text-2xl md:text-3xl font-bold text-slate-800">第三階段：圖表設計規劃</h2>
+                        <p class="text-slate-500">Data Visualization • 變身小數據分析師，先規劃再動手！</p>
+                    </div>
+                </div>
+                <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+                    <div class="p-5 border-b border-slate-100 bg-amber-50">
+                        <h3 class="font-bold text-amber-800 flex items-center">
+                            <i data-lucide="alert-circle" class="w-5 h-5 mr-2"></i>
+                            🎯 你要做哪些圖？請先閱讀下列表格：
+                        </h3>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left border-collapse">
+                            <thead>
+                                <tr class="bg-slate-50 text-slate-500 text-sm uppercase tracking-wider">
+                                    <th class="p-4 font-bold border-b border-slate-200">圖表類型</th>
+                                    <th class="p-4 font-bold border-b border-slate-200">我要呈現什麼</th>
+                                    <th class="p-4 font-bold border-b border-slate-200">為什麼用這個圖</th>
+                                </tr>
+                            </thead>
+                            <tbody class="text-slate-700">
+                                <tr class="hover:bg-amber-50/30 transition-colors">
+                                    <td class="p-4 border-b border-slate-100 font-bold flex items-center"><div class="w-3 h-3 bg-blue-400 rounded-full mr-2"></div>散佈圖</td>
+                                    <td class="p-4 border-b border-slate-100 bg-blue-50/30">讀書時間 vs 成績</td>
+                                    <td class="p-4 border-b border-slate-100">看兩者有沒有關係</td>
+                                </tr>
+                                <tr class="hover:bg-amber-50/30 transition-colors">
+                                    <td class="p-4 border-b border-slate-100 font-bold flex items-center"><div class="w-3 h-3 bg-emerald-400 rounded-full mr-2"></div>長條圖</td>
+                                    <td class="p-4 border-b border-slate-100 bg-emerald-50/30">各區間人數</td>
+                                    <td class="p-4 border-b border-slate-100">看分布狀況</td>
+                                </tr>
+                                <tr class="hover:bg-amber-50/30 transition-colors">
+                                    <td class="p-4 border-b border-slate-100 font-bold flex items-center"><div class="w-3 h-3 bg-purple-400 rounded-full mr-2"></div>直方圖</td>
+                                    <td class="p-4 border-b border-slate-100 bg-purple-50/30">成績分布</td>
+                                    <td class="p-4 border-b border-slate-100">看分數集中程度</td>
+                                </tr>
+                                <tr class="hover:bg-amber-50/30 transition-colors">
+                                    <td class="p-4 font-bold flex items-center text-amber-600"><div class="w-3 h-3 bg-amber-400 rounded-full mr-2"></div>其他</td>
+                                    <td class="p-4" colspan="2"><input type="text" class="w-full bg-slate-50 border border-slate-200 rounded-lg p-2 focus:ring-2 focus:ring-amber-400 outline-none" placeholder="自己發想一個想做的圖..."></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 第四階段：AI輔助生成 -->
+            <div id="stage-4" class="stage-content animate-fade-in space-y-6">
+                <div class="flex items-center space-x-3 mb-6">
+                    <div class="p-3 bg-indigo-100 text-indigo-600 rounded-2xl"><i data-lucide="cpu" class="w-8 h-8"></i></div>
+                    <div>
+                        <h2 class="text-2xl md:text-3xl font-bold text-slate-800">第四階段：AI輔助生成</h2>
+                        <p class="text-slate-500">Magic Time • 直接丟給 Gemini 或 ChatGPT 吧！🔥</p>
+                    </div>
+                </div>
+                <div class="bg-slate-900 rounded-2xl overflow-hidden shadow-xl border border-slate-700">
+                    <div class="flex justify-between items-center bg-slate-800 px-4 py-3 border-b border-slate-700">
+                        <div class="flex space-x-2">
+                            <div class="w-3 h-3 bg-red-500 rounded-full"></div>
+                            <div class="w-3 h-3 bg-yellow-500 rounded-full"></div>
+                            <div class="w-3 h-3 bg-green-500 rounded-full"></div>
+                        </div>
+                        <button onclick="copyPrompt()" id="copyBtn" class="flex items-center space-x-2 bg-indigo-500 hover:bg-indigo-400 text-white text-sm px-4 py-1.5 rounded-lg transition-colors font-medium">
+                            <i data-lucide="copy" class="w-4 h-4" id="copyIcon"></i> <span id="copyText">複製提示詞</span>
+                        </button>
+                    </div>
+                    <div class="p-5 md:p-6 text-indigo-100 overflow-y-auto max-h-[40vh] font-mono text-sm sm:text-base leading-relaxed custom-scrollbar">
+                        <pre id="promptText" class="whitespace-pre-wrap font-sans">你是一位專業的教育數據分析師，同時也是前端網頁設計師。
+
+我會提供一份 Excel 問卷資料，請你幫我完成以下任務：
+
+【任務目標】
+請將我的問卷資料分析結果，設計成一個「完整HTML網頁」。
+
+【重要要求】
+1. 保留所有分析內容（不可刪減）
+2. 轉換為視覺化呈現（圖表＋文字）
+3. 網頁風格要活潑、彩色、適合國中學生
+4. 禁止暗色系（請使用亮色、漸層、卡片式設計）
+5. 使用現代UI（圓角、陰影、卡片）
+
+【研究主題】
+讀書讀越久，成績就一定考得越好嗎？
+
+【網頁結構】
+
+1️⃣ Hero區
+- 標題（吸睛）
+- 副標題（研究問題）
+- emoji或icon
+
+2️⃣ 資料概況
+- 樣本數
+- 變數說明（讀書時間、成績）
+
+3️⃣ 圖表區（使用 Chart.js CDN）
+請自動判斷並產生：
+- 散佈圖（讀書時間 vs 成績）
+- 長條圖（讀書時間分布）
+- 直方圖（成績分布）
+- 至少一個其他因素圖
+👉 每個圖表都要加「白話解釋」
+
+4️⃣ 數據分析結果
+請用條列整理：
+- 是否有相關性
+- 特殊案例（高讀低分、低讀高分）
+- 關鍵因素
+
+5️⃣ 結論區（卡片式）
+- ⭐重要發現
+- ⚠️常見迷思
+- 💡教學建議
+- 🎯學習建議
+
+請輸出完整HTML（可直接開啟）</pre>
+                    </div>
+                </div>
+                <div class="bg-indigo-50 border-l-4 border-indigo-500 p-4 rounded-r-xl">
+                    <p class="text-indigo-800 font-medium">💡 提示：將上方文字複製後，連同你的 Excel / CSV 資料一起傳送給 AI！</p>
+                </div>
+            </div>
+
+            <!-- 第五階段：反思 (已加入學生資料與傳送功能) -->
+            <div id="stage-5" class="stage-content animate-fade-in space-y-6">
+                <div class="flex items-center space-x-3 mb-8">
+                    <div class="p-3 bg-rose-100 text-rose-600 rounded-2xl"><i data-lucide="lightbulb" class="w-8 h-8"></i></div>
+                    <div>
+                        <h2 class="text-2xl md:text-3xl font-bold text-slate-800">第五階段：反思</h2>
+                        <p class="text-rose-500 font-bold">Reflection • 填寫完成即可送出任務！🔥</p>
+                    </div>
+                </div>
+
+                <div class="space-y-6 bg-slate-50 p-6 md:p-8 rounded-2xl border border-slate-100">
+                    <!-- 新增：學生基本資料區 -->
+                    <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm mb-6">
+                        <h3 class="font-bold text-slate-700 mb-4 flex items-center"><i data-lucide="user" class="w-5 h-5 mr-2 text-rose-500"></i> 基本資料</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <div>
+                                <label class="block text-sm font-medium text-slate-600 mb-1">班級 *</label>
+                                <select id="student_class" class="w-full p-3 rounded-lg border border-slate-200 focus:ring-2 focus:ring-rose-400 outline-none bg-white">
+                                    <option value="" disabled selected>請選擇班級</option>
+                                    <option value="901">901</option>
+                                    <option value="902">902</option>
+                                    <option value="903">903</option>
+                                    <option value="904">904</option>
+                                    <option value="905">905</option>
+                                    <option value="906">906</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-slate-600 mb-1">座號 *</label>
+                                <input type="number" id="student_seat" min="1" max="50" class="w-full p-3 rounded-lg border border-slate-200 focus:ring-2 focus:ring-rose-400 outline-none" placeholder="例如：15">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-slate-600 mb-1">姓名 *</label>
+                                <input type="text" id="student_name" class="w-full p-3 rounded-lg border border-slate-200 focus:ring-2 focus:ring-rose-400 outline-none" placeholder="請輸入姓名">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 原有反思題目 -->
+                    <div class="space-y-2">
+                        <label class="font-bold text-slate-700 flex items-center">
+                            <span class="bg-white shadow-sm w-6 h-6 flex items-center justify-center rounded-full text-rose-500 mr-2 text-sm">1</span>
+                            看完資料跟 AI 的分析後，我的結論是：
+                        </label>
+                        <textarea id="s5_conclusion" class="w-full p-4 rounded-xl border border-slate-200 focus:ring-2 focus:ring-rose-400 outline-none h-20 resize-none" placeholder="所以讀書時間跟成績的關係是..."></textarea>
+                    </div>
+
+                    <div class="space-y-2 pt-2">
+                        <label class="font-bold text-slate-700 flex items-center">
+                            <span class="bg-white shadow-sm w-6 h-6 flex items-center justify-center rounded-full text-rose-500 mr-2 text-sm">2</span>
+                            我原本的想法 vs 現在的想法：
+                        </label>
+                        <textarea id="s5_compare" class="w-full p-4 rounded-xl border border-slate-200 focus:ring-2 focus:ring-rose-400 outline-none h-20 resize-none" placeholder="原本以為... 後來發現..."></textarea>
+                    </div>
+
+                    <div class="space-y-3 pt-2">
+                        <label class="font-bold text-slate-700 flex items-center">
+                            <span class="bg-white shadow-sm w-6 h-6 flex items-center justify-center rounded-full text-rose-500 mr-2 text-sm">3</span>
+                            這次任務中，AI 幫助我做到什麼？（可複選）
+                        </label>
+                        <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+                            <label class="checkbox-label flex items-center justify-center p-3 rounded-xl cursor-pointer border-2 border-transparent bg-white shadow-sm hover:border-rose-200 text-slate-600 transition-all" onclick="toggleCheckbox(this)">
+                                <input type="checkbox" name="s5_aiHelped" value="做圖" class="hidden">做圖
+                            </label>
+                            <label class="checkbox-label flex items-center justify-center p-3 rounded-xl cursor-pointer border-2 border-transparent bg-white shadow-sm hover:border-rose-200 text-slate-600 transition-all" onclick="toggleCheckbox(this)">
+                                <input type="checkbox" name="s5_aiHelped" value="分析數據" class="hidden">分析數據
+                            </label>
+                            <label class="checkbox-label flex items-center justify-center p-3 rounded-xl cursor-pointer border-2 border-transparent bg-white shadow-sm hover:border-rose-200 text-slate-600 transition-all" onclick="toggleCheckbox(this)">
+                                <input type="checkbox" name="s5_aiHelped" value="發現盲點" class="hidden">發現盲點
+                            </label>
+                            <label class="checkbox-label flex items-center justify-center p-3 rounded-xl cursor-pointer border-2 border-transparent bg-white shadow-sm hover:border-rose-200 text-slate-600 transition-all" onclick="toggleCheckbox(this)">
+                                <input type="checkbox" name="s5_aiHelped" value="整理重點" class="hidden">整理重點
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="space-y-2 pt-2">
+                        <label class="font-bold text-slate-700 flex items-center">
+                            <span class="bg-white shadow-sm w-6 h-6 flex items-center justify-center rounded-full text-rose-500 mr-2 text-sm">4</span>
+                            你覺得 AI 在這個過程中，有沒有可能誤導你？
+                        </label>
+                        <input type="text" id="s5_mislead" class="w-full p-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-rose-400 outline-none" placeholder="例如：把沒有因果關係的資料說成有關係...">
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- 底部導覽列 -->
+        <div class="bg-slate-50 border-t border-slate-100 p-4 md:px-8 md:py-5 flex justify-between items-center rounded-b-3xl">
+            <button id="prevBtn" onclick="goToStage(currentStage - 1)" class="flex items-center px-4 py-2 rounded-xl font-bold transition-colors text-slate-500 hover:bg-slate-200 hover:text-slate-800">
+                <i data-lucide="chevron-left" class="w-5 h-5 mr-1"></i> 上一頁
+            </button>
+            
+            <div id="stageIndicator" class="text-slate-400 font-medium text-sm">
+                0 / 5
+            </div>
+
+            <button id="nextBtn" onclick="handleNextClick()" class="flex items-center px-5 py-2.5 rounded-xl font-bold transition-all shadow-sm bg-indigo-600 text-white hover:bg-indigo-700 hover:shadow-md hover:-translate-y-0.5">
+                <span id="nextText">下一頁</span> <i data-lucide="chevron-right" id="nextIcon" class="w-5 h-5 ml-1"></i>
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // 初始化 Lucide 圖標
+        lucide.createIcons();
+
+        // ========== 請將你的 Google Apps Script 網址貼在這裡 ==========
+        const GAS_URL = "https://script.google.com/macros/s/你的部署ID/exec"; 
+
+        const stages = [
+            { id: 0, title: "首頁", icon: "play" },
+            { id: 1, title: "第一階段：觀察", icon: "search" },
+            { id: 2, title: "第二階段：找規律", icon: "book-open" },
+            { id: 3, title: "第三階段：圖表", icon: "line-chart" },
+            { id: 4, title: "第四階段：AI魔法", icon: "cpu" },
+            { id: 5, title: "第五階段：反思", icon: "lightbulb" }
+        ];
+
+        let currentStage = 0;
+        let isSubmitting = false;
+
+        // 渲染進度條圖標
+        const progressContainer = document.getElementById('progress-icons');
+        stages.forEach((stage, index) => {
+            const div = document.createElement('div');
+            div.className = `flex flex-col items-center cursor-pointer transition-all duration-300 icon-wrapper-${index} ${index === 0 ? 'text-indigo-600 scale-110' : 'text-slate-400 hover:text-indigo-400'}`;
+            div.onclick = () => goToStage(index);
+            div.innerHTML = `
+                <div class="p-2 rounded-full mb-1 icon-bg-${index} ${index === 0 ? 'bg-indigo-100 shadow-md' : 'bg-transparent'}">
+                    <i data-lucide="${stage.icon}" class="w-6 h-6"></i>
+                </div>
+                <span class="text-xs font-bold hidden md:block">${stage.title}</span>
+            `;
+            progressContainer.appendChild(div);
+        });
+        lucide.createIcons(); // 重新渲染剛生成的圖標
+
+        function goToStage(index) {
+            if (index < 0 || index >= stages.length) return;
+            
+            // 隱藏舊的
+            document.getElementById(`stage-${currentStage}`).classList.remove('active');
+            
+            // 更新 UI 狀態
+            currentStage = index;
+            document.getElementById(`stage-${currentStage}`).classList.add('active');
+            
+            // 更新進度條
+            document.getElementById('progress-bar-fill').style.width = `${(currentStage / (stages.length - 1)) * 100}%`;
+            document.getElementById('stageIndicator').innerText = `${currentStage} / ${stages.length - 1}`;
+            
+            // 更新頂部圖標狀態
+            stages.forEach((_, idx) => {
+                const wrapper = document.querySelector(`.icon-wrapper-${idx}`);
+                const bg = document.querySelector(`.icon-bg-${idx}`);
+                if (idx === currentStage) {
+                    wrapper.className = `flex flex-col items-center cursor-pointer transition-all duration-300 icon-wrapper-${idx} text-indigo-600 scale-110`;
+                    bg.className = `p-2 rounded-full mb-1 icon-bg-${idx} bg-indigo-100 shadow-md`;
+                } else {
+                    wrapper.className = `flex flex-col items-center cursor-pointer transition-all duration-300 icon-wrapper-${idx} text-slate-400 hover:text-indigo-400`;
+                    bg.className = `p-2 rounded-full mb-1 icon-bg-${idx} bg-transparent`;
+                }
+            });
+
+            // 更新底部按鈕
+            const prevBtn = document.getElementById('prevBtn');
+            const nextBtn = document.getElementById('nextBtn');
+            const nextText = document.getElementById('nextText');
+            const nextIcon = document.getElementById('nextIcon');
+
+            if (currentStage === 0) {
+                prevBtn.classList.add('opacity-0', 'pointer-events-none');
+            } else {
+                prevBtn.classList.remove('opacity-0', 'pointer-events-none');
+            }
+
+            if (currentStage === stages.length - 1) {
+                nextBtn.className = "flex items-center px-5 py-2.5 rounded-xl font-bold transition-all shadow-sm bg-gradient-to-r from-emerald-400 to-teal-500 text-white hover:shadow-md hover:-translate-y-0.5";
+                nextText.innerText = "完成並送出 🎉";
+                nextIcon.style.display = "none";
+            } else {
+                nextBtn.className = "flex items-center px-5 py-2.5 rounded-xl font-bold transition-all shadow-sm bg-indigo-600 text-white hover:bg-indigo-700 hover:shadow-md hover:-translate-y-0.5";
+                nextText.innerText = "下一頁";
+                nextIcon.style.display = "block";
+            }
+        }
+
+        // 處理下一頁或送出
+        function handleNextClick() {
+            if (currentStage === stages.length - 1) {
+                submitData();
+            } else {
+                goToStage(currentStage + 1);
+            }
+        }
+
+        // 自訂 Radio 與 Checkbox 邏輯 (仿 React 狀態視覺)
+        function selectRadio(element, group, color) {
+            const groupEl = document.getElementById(group);
+            const labels = groupEl.querySelectorAll('.radio-label');
+            labels.forEach(lbl => {
+                lbl.classList.remove(`border-${color}-500`, `bg-${color}-50`);
+                lbl.classList.add('border-transparent', 'bg-white');
+                lbl.querySelector('.radio-circle').innerHTML = '';
+                lbl.querySelector('.radio-circle').classList.remove(`border-${color}-500`);
+                lbl.querySelector('.radio-circle').classList.add('border-slate-300');
+                lbl.querySelector('input').checked = false;
+            });
+            element.classList.add(`border-${color}-500`, `bg-${color}-50`);
+            element.classList.remove('border-transparent', 'bg-white');
+            element.querySelector('.radio-circle').classList.add(`border-${color}-500`);
+            element.querySelector('.radio-circle').classList.remove('border-slate-300');
+            element.querySelector('.radio-circle').innerHTML = `<div class="w-2.5 h-2.5 bg-${color}-500 rounded-full"></div>`;
+            element.querySelector('input').checked = true;
+        }
+
+        function selectRadioBtn(element, group, color) {
+            const groupEl = document.getElementById(group);
+            const labels = groupEl.querySelectorAll('.radio-label-btn');
+            labels.forEach(lbl => {
+                lbl.classList.remove(`border-${color}-500`, `bg-${color}-50`, `text-${color}-700`, 'font-bold');
+                lbl.classList.add('border-transparent', 'bg-white', 'text-slate-600');
+                lbl.querySelector('input').checked = false;
+            });
+            element.classList.add(`border-${color}-500`, `bg-${color}-50`, `text-${color}-700`, 'font-bold');
+            element.classList.remove('border-transparent', 'bg-white', 'text-slate-600');
+            element.querySelector('input').checked = true;
+        }
+
+        function toggleDesc(id, show) {
+            document.getElementById(id).style.display = show ? 'block' : 'none';
+        }
+
+        function toggleCheckbox(element) {
+            const input = element.querySelector('input');
+            input.checked = !input.checked;
+            if (input.checked) {
+                element.classList.add('border-rose-500', 'bg-rose-50', 'text-rose-700', 'font-bold');
+                element.classList.remove('border-transparent', 'bg-white', 'text-slate-600');
+            } else {
+                element.classList.remove('border-rose-500', 'bg-rose-50', 'text-rose-700', 'font-bold');
+                element.classList.add('border-transparent', 'bg-white', 'text-slate-600');
+            }
+        }
+
+        function copyPrompt() {
+            const text = document.getElementById('promptText').innerText;
+            const textArea = document.createElement("textarea");
+            textArea.value = text;
+            document.body.appendChild(textArea);
+            textArea.select();
+            try {
+                document.execCommand('copy');
+                document.getElementById('copyText').innerText = "已複製！";
+                const icon = document.getElementById('copyIcon');
+                icon.setAttribute('data-lucide', 'check');
+                lucide.createIcons();
+                setTimeout(() => {
+                    document.getElementById('copyText').innerText = "複製提示詞";
+                    icon.setAttribute('data-lucide', 'copy');
+                    lucide.createIcons();
+                }, 2000);
+            } catch (err) {
+                console.error('複製失敗', err);
+            }
+            document.body.removeChild(textArea);
+        }
+
+        // 送出資料到 GAS
+        function submitData() {
+            if (isSubmitting) return;
+
+            // 取得第5階段表單資料
+            const stuClass = document.getElementById('student_class').value;
+            const stuSeat = document.getElementById('student_seat').value;
+            const stuName = document.getElementById('student_name').value.trim();
+            const conclusion = document.getElementById('s5_conclusion').value.trim();
+            const compare = document.getElementById('s5_compare').value.trim();
+            const mislead = document.getElementById('s5_mislead').value.trim();
+            
+            // 取得選取的 checkbox
+            const aiHelped = Array.from(document.querySelectorAll('input[name="s5_aiHelped"]:checked'))
+                                  .map(cb => cb.value).join(', ');
+
+            // 基礎驗證
+            if (!stuClass || !stuSeat || !stuName) {
+                alert("⚠️ 請確實填寫：班級、座號與姓名！");
+                return;
+            }
+
+            const payload = {
+                classNum: stuClass,
+                seatNum: stuSeat,
+                name: stuName,
+                conclusion: conclusion,
+                compare: compare,
+                aiHelped: aiHelped,
+                mislead: mislead
+            };
+
+            const btn = document.getElementById('nextBtn');
+            btn.innerHTML = '傳送中...';
+            isSubmitting = true;
+
+            // 如果沒有填寫 GAS 網址，只給提示
+            if (GAS_URL === "https://script.google.com/macros/s/AKfycby-iidSoKC1pfNkkbDegYxT97KLjbTzRcRZSY6mZjifZYNis_-txCLCT7kqpneM2HJNrg/exec") {
+                alert("🎉 模擬送出成功！\n\n您收集到的資料：\n" + JSON.stringify(payload, null, 2) + "\n\n(若要實際寫入 Google 試算表，請在 HTML 程式碼中填入您部署的 GAS_URL)");
+                btn.innerHTML = '完成任務 🎉';
+                isSubmitting = false;
+                return;
+            }
+
+            // 發送資料到 Google Apps Script (使用 GET 方法以避免 CORS 問題，對學生端最簡單)
+            // 將參數轉為 Query String
+            const queryString = new URLSearchParams(payload).toString();
+            
+            fetch(`${GAS_URL}?${queryString}`, {
+                method: 'GET',
+                mode: 'no-cors' // 避免跨網域阻擋
+            })
+            .then(() => {
+                alert('恭喜你完成所有學習任務！資料已成功送出✨');
+                btn.innerHTML = '已送出 🎉';
+            })
+            .catch(err => {
+                console.error("錯誤:", err);
+                alert("發生錯誤，請稍後再試。");
+                btn.innerHTML = '重新送出';
+                isSubmitting = false;
+            });
+        }
+    </script>
+</body>
+</html>
